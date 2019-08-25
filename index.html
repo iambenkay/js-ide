@@ -9,6 +9,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono&display=swap" rel="stylesheet">
 
     <title>JS IDE</title>
     <style>
@@ -32,14 +33,14 @@
 
         nav {
             height: 10%;
-            font-family: "ubuntu mono";
+            font-family: "Ubuntu Mono" monospace;
         }
 
         #console {
             height: 90%;
             margin: 0;
             overflow-y: auto;
-            font-family: "ubuntu mono";
+            font-family: "Ubuntu Mono" monospace;
         }
     </style>
 </head>
@@ -67,14 +68,20 @@
         crossorigin="anonymous"></script>
     <script src="/static/src-min/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
+
+        // initialize the content of the text editor to some Javascript
         $("#editor").text(`function echo(m) {\n\treturn m;\n}\nconsole.log(echo("Hello World"));`);
+        
+        // initialize the editor environment using the ace library
         var editor = ace.edit("editor");
-        editor.session.setMode("ace/mode/javascript");
-        editor.setTheme("ace/theme/dawn");
+        editor.session.setMode("ace/mode/javascript"); // editor language
+        editor.setTheme("ace/theme/dawn"); // editor theme
         editor.session.setTabSize(4);
         editor.session.setUseWrapMode(true);
 
+        // Override default console functions for our custom Dev Console
         (function () {
+            // store default console functionality before changing them
             default_log = console.log;
             default_clear = console.clear;
             default_error = console.error;
@@ -88,31 +95,50 @@
                         $("#console").append(arg + ' ');
                     }
                 }
+                // Console prompt
                 $("#console").append('\n&raquo;  ');
+
+                // So console is always scrolled to the bottom
                 $("#console").get(0).scrollTop = $("#console").get(0).scrollHeight;
+                
+                // Allow the default console action to happen
                 default_log(...args)
             }
             console.error = function (e) {
 
                 $("#console").append("Error: " + e);
 
+                // Console prompt
                 $("#console").append('\n&raquo;  ');
+
+                // So console is always scrolled to the bottom
                 $("#console").get(0).scrollTop = $("#console").get(0).scrollHeight;
+                
+                // Allow the default console action to happen
                 default_error(e)
             }
             console.warn = function (w) {
                 $("#console").append("Warning: " + w);
 
+                // Console prompt
                 $("#console").append('\n&raquo;  ');
+                
+                // So console is always scrolled to the bottom
                 $("#console").get(0).scrollTop = $("#console").get(0).scrollHeight;
+                
+                // Allow the default console action to happen
                 default_warn(w)
             }
             console.clear = function () {
+                // Console prompt
                 $("#console").html("&raquo;  ");
+                // Allow the default console action to happen
                 default_clear();
             }
             clear = console.clear;
-        })()
+        })();
+
+        // For our custom clear and execute shortcuts Ctrl-Enter and Ctrl-I
         window.onkeypress = (e) => {
             switch (event.keyCode) {
                 case 9:

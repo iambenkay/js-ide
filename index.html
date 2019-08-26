@@ -19,39 +19,48 @@
         }
 
         #editor {
-            height: 95%;
+            height: 100%;
         }
         body > div:first-child {
             height: 70%;
-        }
-        body > div:first-child > nav {
-            height: 5%;
+            display: flex;
+            flex-direction: column;
         }
         body > div:nth-child(2) {
             height: 30%;
+            display: flex;
+            flex-direction: column;
         }
 
         nav {
-            height: 10%;
             font-family: "Ubuntu Mono", monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         #console {
-            height: 90%;
+            height: 100%;
             margin: 0;
             overflow-y: auto;
             font-family: "Ubuntu Mono", monospace;
+        }
+        [action] {
+            cursor: pointer;
+        }
+        nav > span {
+            display: block;
         }
     </style>
 </head>
 
 <body>
     <div>
-        <nav class="text-dark d-flex align-items-center pl-2 bg-warning">Editor (Use Ctrl-Enter to execute)</nav>
+        <nav class="text-dark d-flex align-items-center pl-2 bg-warning"><span>Editor (Use Ctrl-Enter to execute)</span><div class="btn btn-warning" action>EXECUTE</div></nav>
         <div id="editor"></div>
     </div>
     <div>
-        <nav class="text-light d-flex align-items-center pl-2 bg-dark">Dev Console (Use Ctrl-I to clear console)</nav>
+        <nav class="text-light d-flex align-items-center pl-2 bg-dark"><span>Dev Console (Use Ctrl-I to clear console)</span><div class="btn btn-dark" action>CLEAR</div></nav>
         <pre id="console"
             class="border border-dark bg-light text-dark p-2">Welcome to the JS Console<br />&raquo;  </pre>
     </div>
@@ -139,16 +148,20 @@
         })();
 
         // For our custom clear and execute shortcuts Ctrl-Enter and Ctrl-I
-        window.onkeypress = (e) => {
-            switch (event.keyCode) {
-                case 9:
-                    console.clear();
-                    break;
-                case 10:
-                    eval(editor.getValue());
-                    break;
-            }
+        function kbd(e){
+            if (e.key === "i") console.clear();
+            if (e.key === "Enter") eval(editor.getValue());
         }
+
+        window.addEventListener('keydown', function (e) {
+            if (e.key === "Control") window.addEventListener('keydown', kbd);
+        });
+        window.addEventListener('keyup', function (e) {
+            if(e.key === "Control") window.removeEventListener('keydown', kbd);
+        })
+        // For phones and devices without a control key
+        $("[action]").get(0).addEventListener('click', function (){ eval(editor.getValue()); });
+        $("[action]").get(1).addEventListener('click', function (){ console.clear(); });
     </script>
 </body>
 
